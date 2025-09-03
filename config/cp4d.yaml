@@ -28,6 +28,7 @@ cp4d:
   cp4d_production_license: True
   accept_licenses: True
   db2u_limited_privileges: False
+  change_node_settings: False
   use_fs_iam: True
   operators_project: cpd-operators
   ibm_cert_manager: False
