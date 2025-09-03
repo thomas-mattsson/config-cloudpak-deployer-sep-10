@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: cloud-pak-deployer
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: cloud-pak-deployer
+  namespace: cloud-pak-deployer
+spec:
+  lookupPolicy:
+    local: true
+---
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: cloud-pak-deployer
+  namespace: cloud-pak-deployer
+spec:
+  source:
+    type: Git
+    git:
+      uri: 'https://github.com/IBM/cloud-pak-deployer'
+  strategy:
+    type: Docker
+    dockerStrategy:
+      imageOptimizationPolicy: SkipLayers
+      buildArgs:
+        - name: CPD_OLM_UTILS_V1_IMAGE
+          value: 'icr.io/cpopen/cpd/olm-utils:latest'
+        - name: CPD_OLM_UTILS_V2_IMAGE
+          value: 'icr.io/cpopen/cpd/olm-utils-v2:latest'
+        - name: CPD_OLM_UTILS_V3_IMAGE
+          value: 'icr.io/cpopen/cpd/olm-utils-v3:latest'
+  triggers:
+    - type: "ConfigChange"
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'cloud-pak-deployer:latest'
+

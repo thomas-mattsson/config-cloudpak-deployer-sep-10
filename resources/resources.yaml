@@ -1,0 +1,118 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cloud-pak-deployer-input
+  namespace: cloud-pak-deployer
+data:
+  config-git-repo: https://github.com/thomas-mattsson/cloud-pak-deployer-gitops
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cloud-pak-deployer-sa
+  namespace: cloud-pak-deployer
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: system:openshift:scc:privileged
+  namespace: cloud-pak-deployer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:privileged
+subjects:
+- kind: ServiceAccount
+  name: cloud-pak-deployer-sa
+  namespace: cloud-pak-deployer
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cloud-pak-deployer-cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: cloud-pak-deployer-sa
+  namespace: cloud-pak-deployer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cloud-pak-deployer-status
+  namespace: cloud-pak-deployer
+spec:
+  storageClassName: ibm-storage-fusion-cp-sc  # ocs-storagecluster-cephfs
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: cloud-pak-deployer
+  name: cloud-pak-deployer
+  namespace: cloud-pak-deployer
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1
+  template:
+    metadata:
+      name: cloud-pak-deployer
+      labels:
+        app: cloud-pak-deployer
+    spec:
+      containers:
+      - name: cloud-pak-deployer
+        image: image-registry.openshift-image-registry.svc:5000/cloud-pak-deployer/cloud-pak-deployer:latest
+        imagePullPolicy: Always
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        env:
+        - name: STATUS_DIR
+          value: /Data/cpd-status
+        - name: CP_ENTITLEMENT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cloud-pak-deployer-input
+              key: entitlement-key
+        - name: CPD_CONFIG_GIT_REPO
+          valueFrom:
+            configMapKeyRef:
+              name: cloud-pak-deployer-input
+              key: config-git-repo
+        - name: CPD_CONFIG_GIT_REF
+          valueFrom:
+            configMapKeyRef:
+              name: cloud-pak-deployer-input
+              key: config-git-ref
+              optional: true
+        - name: CPD_CONFIG_GIT_CONTEXT
+          valueFrom:
+            configMapKeyRef:
+              name: cloud-pak-deployer-input
+              key: config-git-context
+              optional: true
+        volumeMounts:
+        - name: status-volume
+          mountPath: /Data/cpd-status
+        command:
+          - /bin/bash
+          - -cx
+        args:
+          - /cloud-pak-deployer/cp-deploy.sh env apply -v
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 0
+      serviceAccountName: cloud-pak-deployer-sa
+      volumes:
+      - name: status-volume
+        persistentVolumeClaim:
+          claimName: cloud-pak-deployer-status 
