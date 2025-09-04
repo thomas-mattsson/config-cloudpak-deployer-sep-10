@@ -21,7 +21,7 @@ cp4d:
     - watsonx-ai
   # - watsonx-code-assistant-ansible
   # - watsonx-code-assistant-z
-   - watsonx-data
+    - watsonx-data
   # - watsonx-gov-mm
   # - watsonx-gov-rc
   # - watsonx-orchestrate
