@@ -25,7 +25,7 @@ cp4d:
   # - watsonx-gov-mm
   # - watsonx-gov-rc
   # - watsonx-orchestrate
-  cp4d_production_license: True
+  cp4d_production_license: False
   accept_licenses: True
   db2u_limited_privileges: False
   change_node_settings: False
