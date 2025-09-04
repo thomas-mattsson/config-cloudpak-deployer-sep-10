@@ -13,7 +13,7 @@ openshift:
   gpu:
     install: auto
   openshift_ai:
-    install: True
+    install: auto
     channel: auto
   mcg:
     install: False
