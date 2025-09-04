@@ -21,7 +21,7 @@ cp4d:
     - watsonx-ai
   # - watsonx-code-assistant-ansible
   # - watsonx-code-assistant-z
-  # - watsonx-data
+   - watsonx-data
   # - watsonx-gov-mm
   # - watsonx-gov-rc
   # - watsonx-orchestrate
@@ -389,7 +389,7 @@ cp4d:
 
   - name: watsonx_data
     description: watsonx.data
-    state: removed
+    state: installed
 
   - name: watsonx_dataintelligence
     description: watsonx.data intelligence
