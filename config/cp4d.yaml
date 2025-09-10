@@ -22,7 +22,7 @@ cp4d:
   # - watsonx-code-assistant-ansible
   # - watsonx-code-assistant-z
     - watsonx-data
-  # - watsonx-gov-mm
+    - watsonx-gov-mm
   # - watsonx-gov-rc
   # - watsonx-orchestrate
   cp4d_production_license: False
@@ -120,12 +120,12 @@ cp4d:
     description: Db2 OLTP
     size: small
     instances:
-    - name: ca-metastore
+    - name: openpages
       metadata_size_gb: 20
       data_size_gb: 20
       backup_size_gb: 20  
       transactionlog_size_gb: 20
-    state: removed
+    state: installed
 
   - name: db2wh
     description: Db2 Warehouse
@@ -414,7 +414,7 @@ cp4d:
 
   - name: watsonx_governance
     description: watsonx.governance
-    state: removed
+    state: installed
     installation_options:
       installType: all
       enableFactsheet: true
