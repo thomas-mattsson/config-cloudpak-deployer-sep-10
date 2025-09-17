@@ -121,10 +121,15 @@ cp4d:
     size: small
     instances:
     - name: openpages
-      metadata_size_gb: 20
-      data_size_gb: 20
+      metadata_size_gb: 50
+      data_size_gb: 120
       backup_size_gb: 20  
       transactionlog_size_gb: 20
+    - name: openscale
+      metadata_size_gb: 100
+      data_size_gb: 100
+      backup_size_gb: 100  
+      transactionlog_size_gb: 100
     state: installed
 
   - name: db2wh
